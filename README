@@ -1,0 +1,55 @@
+Agenda
+------
+
+A collection of functions useful for making printable calendars and diary pages, 
+based on Perl's DateTime family. 
+
+The modules are:
+
+        Agenda::Astro - sun, moon functions
+
+        Agenda::Profile - functions for creating and reading simple user
+                profiles for calendars.  A sample profile is included
+                as cal-sample.cfg
+
+        Agenda::PostScript - functions for creating DSC conforming
+                PostScript output (useful if you want to print your
+                calendars)
+
+        Agenda::Day - an object representing a day in the calendar
+
+        Agenda::Calendar - an object representing a collection of days
+
+There are also some example scripts included that will generate
+calendars using these modules.  Principally a-week.pl
+
+Try:  perl a-week.pl -a > temp.ps
+
+to get a weekly diary page for next week with Sun & Moon times shown.
+You need to set up a file called agenda.cfg in the current directory.
+
+PREREQUISITES
+
+Perl 5.005+ (simply because I have not tested it on a lower version).
+My Games::Fortune module + some fortune data files if you want to use
+the mottos functions in Agenda::Postscript.
+
+INSTALLATION
+
+(Not quite) the usual procedure
+
+        perl Makefile.PL
+        make
+
+        cp sample.cfg agenda.cfg
+        * and edit to suit *
+
+        make test
+        make install
+
+COPYRIGHT
+
+        (c) 2000--2015 Toby Thurston
+
+This library is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
