@@ -5,6 +5,7 @@ use Agenda::Events;
 use Agenda::Astro;
 use Agenda::PostScript;
 use Agenda::Profile;
+use Agenda::Fortune;
 $loaded = 1;
 print "ok 1\n";
 

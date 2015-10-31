@@ -52,7 +52,6 @@ sub new {
         margin      => 14 ,
         orientation => 'portrait' ,
         title       => 'Agenda::Postscript output' ,
-        motto       => 0 ,
         pages       => 1 ,
         marks       => 0 ,
         @_               , # override with user values....
@@ -62,10 +61,6 @@ sub new {
 
     croak "Can't construct a Agenda::PostScript object without a profile\n"
                                                             unless defined $self->{config};
-
-    if ( $self->{motto} ) {
-        use Games::Fortune qw(apothegm fortune);
-    }
 
     $self->{llx} = $self->{margin};
     $self->{lly} = $self->{margin};

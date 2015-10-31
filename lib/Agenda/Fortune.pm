@@ -57,28 +57,16 @@ sub fortune {
 
 =head1 NAME
 
-Games::Fortune - Perl extension to replicate a subset of `fortune' function
+Agenda::Fortune - Perl extension to replicate a subset of `fortune' function
 
 =head1 SYNOPSIS
 
-  use Games::Fortune;
+  use Agenda::Fortune;
   @lines = fortune();
 
-
-  #> perl -MGames::Fortune -e"fortune"
+  #> perl -MAgenda::Fortune -e"print fortune"
 
 =head1 DESCRIPTION
-
-A perl interface to your fortune files.  You need to have a set of fortune files
-installed in the standard place: /usr/share/fortune.  (Or
-on Windows in c:\cygwin\usr\share\fortune).
-
-Version 0.01 implements only the `short' and `long' options; the -s and -l switches.
-These are not done with switches but with different function names.
-
-Version 0.02 implements a more general keyword approach.  You can call fortune() with
-a comma list of strings with one or more blank separated words.
-
 
 =over 4
 
@@ -107,7 +95,7 @@ get back one long string with embedded "\n" characters.  In a list context you g
 list of one or more lines.  In a void context, the adage is printed to STDOUT.
 This lets you do a perl one-liner to get `fortune' function, like this:
 
-    perl -MAgenda::Fortune -e"fortune"
+    perl -MAgenda::Fortune -e"print fortune"
 
 
 =head2 EXPORT
