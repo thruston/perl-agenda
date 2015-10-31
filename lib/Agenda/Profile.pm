@@ -6,6 +6,7 @@ use warnings;
 use constant DEBUG => 0;
 use Carp;
 
+our $VERSION = 0.3;
 
 =head1 NAME
 
@@ -69,6 +70,34 @@ sub new {
     return $self;
 }
 
+sub _set_value {
+    my ($self, $key, $val) = @_;
+
+    $key = lc $key;
+    $key = lc $key;
+    warn "$key --> $val\n" if DEBUG;
+
+    if ($key eq 'tag') {
+        my ($tag, $spec) = split ' ', $val, 2;
+        push @{ $self->{tag_list} }, { tag => $tag, spec => $spec }; 
+        return $self->{tag_hash}->{lc $tag} = $spec;
+    }
+
+    if ( ! exists $fields{$key} ) {
+        confess "Unknown key: $key\n";
+    }
+
+    $val =~ s/^(["'])(.*)\1/$2/;
+    $val =~ s/^\s*//;
+    $val =~ s/\s*$//;
+    if ( $val =~ /,/ ) {
+        return $self->{$key} = [ split ',', $val ];
+    }
+    else {
+        return $self->{$key} = $val;
+    }
+}
+
 sub load {
 
     my $cfg  = shift;
@@ -78,7 +107,7 @@ sub load {
 
     die "Can't access $file" unless -f $file;
 
-    open my $fh, '<', "$file" or die "Can't open $file\n";
+    open my $fh, '<', $file or die "Can't open $file\n";
 
     while (<$fh>) {
         chomp;
@@ -87,41 +116,13 @@ sub load {
         next if /^$/;
         s/=/ /g;
         my ($key, $val) = split ' ', $_, 2;
-        $key = lc $key;
-        warn "$key --> $val\n" if DEBUG;
-
-        if ($key eq 'tag') {
-            my ($tag, $spec) = split ' ', $val, 2;
-            push @{ $cfg->{tag_list} }, { tag => $tag, spec => $spec }; 
-            $cfg->{tag_hash}->{lc $tag} = $spec;
-            next;
-        }
-
-        if ( ! exists $fields{$key} ) {
-            confess "Unknown key '$key' found in $file\n";
-        }
-
-        $val = _strip_quotes($val);
-        if ( $val =~ /,/ ) {
-            $cfg->$key( [ split ',', $val ] );
-        }
-        else {
-            $cfg->$key($val);
-        }
+        $cfg->_set_value($key, $val);
     }
     close $fh;
     $cfg->{source_file} = $file;
     return $cfg;
 }
 
-sub _strip_quotes ($) {
-    my $val = shift;
-    return '' unless defined $val;
-    $val =~ s/^(["'])(.*)\1/$2/;
-    $val =~ s/^\s+//;
-    $val =~ s/\s+$//;
-    return $val;
-}
 
 sub AUTOLOAD {
     my $self = shift;
@@ -137,8 +138,7 @@ sub AUTOLOAD {
     }
 
     if (defined $val) {
-        warn "Setting $key <- $val\n" if DEBUG;
-        return $self->{$key} = $val;
+        return $self->_set_value($key, $val);
     } else {
         carp "Reading $key ->", defined $self->{$key} ? $self->{$key} : 'undef', "\n" if DEBUG;
         return $self->{$key};

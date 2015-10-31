@@ -1,5 +1,5 @@
 #! /usr/bin/perl -w
-# Toby Thurston -- 03 Feb 2012 
+# Toby Thurston -- 30 Oct 2015 
 #
 # Make a weekly calendar                                                   
 #                                                                          
@@ -16,6 +16,7 @@ use Agenda::Events;
 use Agenda::PostScript;
 use Agenda::Profile;
 use Agenda::Astro qw(Sun Moon Phase set_location);
+use Agenda::Fortune qw(apothegm);
 use POSIX qw(ceil);
 
 use Getopt::Std;
@@ -248,17 +249,18 @@ for my $p ( 1 .. $pages ) {
     }
 
     if ( $want_motto ) {
-        use Games::Fortune qw(apothegm);
         my $x = $ps->{urx};
         my $y_position = 7==$days_per_page ? 240 : 58;
-        my @motto_lines = apothegm('by_size');
+        my @motto_lines = apothegm();
         my $leading = 7;
         my $y = $y_position+$leading*@motto_lines;
         for (@motto_lines) {
             $y -= $leading;
-            $ps->put("$x $y moveto Notes 0 (");
-            $ps->put_proof($_);
-            $ps->put(") rshow");
+            # escape backslash and parens, trim trailing & leading space
+            s/([\(\)\\])/\\$1/g;
+            s/^\s*//; s/\s*$//;
+            s/--/-/g;
+            $ps->put("$x $y moveto Notes 0 ($_) rshow");
         }
     }
 

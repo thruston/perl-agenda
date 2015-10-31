@@ -20,6 +20,8 @@ The modules are:
 
         Agenda::Calendar - an object representing a collection of days
 
+        Agenda::Fortune - a simple implementation of `fortune` to get mottos
+
 There are also some example scripts included that will generate
 calendars using these modules.  Principally a-week.pl
 
@@ -31,8 +33,13 @@ You need to set up a file called agenda.cfg in the current directory.
 PREREQUISITES
 
 Perl 5.005+ (simply because I have not tested it on a lower version).
-My Games::Fortune module + some fortune data files if you want to use
-the mottos functions in Agenda::Postscript.
+
+And these modules
+
+DateTime
+DateTime::Span
+DateTime::Format::Epoch::MJD
+
 
 INSTALLATION
 
@@ -40,12 +47,11 @@ INSTALLATION
 
         perl Makefile.PL
         make
+        make test
+        make install
 
         cp sample.cfg agenda.cfg
         * and edit to suit *
-
-        make test
-        make install
 
 COPYRIGHT
 

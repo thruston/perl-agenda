@@ -3,4 +3,12 @@ Revision history for Perl extension Agenda
 0.01  Toby Thurston -- 28 Nov 2011 
 
 0.02  Moved to Github.  Toby Thurston -- 30 Oct 2015 
+
+0.03  - Integrated `fortune' function into Agenda::Fortune
+      - cleaner processing of multiline fortunes
+      - tidied up processing of profiles
+      - sample.cfg has valid entries and more useful notes
+
+      Toby Thurston -- 31 Oct 2015 
      
+

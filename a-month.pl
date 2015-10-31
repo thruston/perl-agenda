@@ -1,5 +1,5 @@
 #! /usr/bin/perl -w
-# Toby Thurston -- 15 Dec 2011 
+# Toby Thurston -- 30 Oct 2015 
 # Make a monthly calendar 
 
 use strict;
@@ -15,7 +15,7 @@ use Agenda::Events;
 use Agenda::PostScript;
 use Agenda::Profile;
 use Agenda::Astro qw(Phase);
-use Games::Fortune qw(apothegm);
+use Agenda::Fortune qw(apothegm);
 
 my $opts = { h => 0, c => 0, d => 0, f => 0, m => 0, w => 0, q => 0, p => 'agenda.cfg', l => 0, g => 0, t => 0 };
 getopts('cdfghlmqtp:w', $opts);
@@ -317,9 +317,10 @@ for my $p (1..$pages) {
             $x+=2;
             for (@motto_lines) {
                 $y -= $leading;
-                $ps->put("$x $y moveto Notes 0 (");
-                $ps->put_proof($_);
-                $ps->put(") show");
+                # escape backslash and parens, trim trailing & leading space
+                s/([\(\)\\])/\\$1/g;
+                s/^\s*//; s/\s*$//;
+                $ps->put("$x $y moveto Notes 0 ($_) rshow");
             }
         }
         

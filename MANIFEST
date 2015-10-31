@@ -7,6 +7,7 @@ a-month.pl
 a-week.pl
 lib/Agenda/Astro.pm
 lib/Agenda/Events.pm
+lib/Agenda/Fortune.pm
 lib/Agenda/PostScript.pm
 lib/Agenda/Profile.pm
 sample.cfg

@@ -385,6 +385,7 @@ sub put {
 sub _ps_proof {
     for (@_) {  # escape parens and escapes
         s/([\(\)\\])/\\$1/g;
+        s/^\s*//; s/\s*$//;
     }
     return "@_";
 }
