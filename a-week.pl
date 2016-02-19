@@ -1,12 +1,12 @@
 #! /usr/bin/perl -w
-# Toby Thurston -- 30 Oct 2015 
+#
+# Toby Thurston -- 19 Feb 2016 
 #
 # Make a weekly calendar                                                   
 #                                                                          
-# Version 0.2 --- remove dependency on Cal::Date / refactor Cal::PostScript
+# (c) Copyright 1999-2016.  All rights reserved.
 #
-#
-# (c) Copyright 1999-2012.  All rights reserved.
+
 use strict;
 use warnings;
 use feature "switch";
@@ -17,9 +17,9 @@ use Agenda::PostScript;
 use Agenda::Profile;
 use Agenda::Astro qw(Sun Moon Phase set_location);
 use Agenda::Fortune qw(apothegm);
-use POSIX qw(ceil);
 
 use Getopt::Std;
+use POSIX;
 
 my $opts = { h => 0, m => 0, z => 0 , d => 0, a => 0, p => 'agenda.cfg' };
 getopts('acdhmzp:', $opts);
@@ -348,7 +348,7 @@ sub put_mini_calendar {
         for my $d (1..$days_in_month) {
             $day_string .= sprintf '%3d', $d;
         }
-        for my $r (1..ceil(($day_offset+$days_in_month)/7) ) {
+        for my $r (1..POSIX::ceil(($day_offset+$days_in_month)/7) ) {
             my $mon_mjd = $first->mjd-$day_offset-7+7*$r;
             my $want_red = ($page_alpha->mjd <= $mon_mjd) && ($mon_mjd <= $page_omega->mjd);
             $ps->put(sprintf '%g %g moveto ( ) stringwidth 8#040 (%s) gsave %s widthshow grestore', 

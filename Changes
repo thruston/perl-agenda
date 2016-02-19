@@ -12,3 +12,24 @@ Revision history for Perl extension Agenda
       Toby Thurston -- 31 Oct 2015 
      
 
+To do list
+
+- make proper scripts directory
+
+- only put colours used into PS output
+
+- add option to post process to PDF
+
+- change to get opt Long
+
+- change to Pod2usage
+
+- more flexible layout?  
+
+- A5 page size?
+
+- refactor to take out common things between a-week and a-month
+
+- config from current dir, or home dir, or defaults even when installed to sys
+
+- better name?
