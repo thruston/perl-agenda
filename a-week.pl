@@ -459,7 +459,7 @@ sub put_schedule {
             }
 
         }
-        put_notes($day->mjd, $x, $y-$dp+3);
+        put_notes($day->mjd, $x, $y-$dp+3, 7);
 
     }
 
@@ -501,19 +501,19 @@ sub put_schedule {
             put_moon( $x+$wd-30, $y-6, $observations_on{$day->mjd});
         }
 
-        put_notes($day->mjd, $x-2, $y-$dp+3);
+        put_notes($day->mjd, $x-2, $y-32, -7);
 
     }
 }
 
 sub put_notes {
-    my ($mjd, $x, $y) = @_;
+    my ($mjd, $x, $y, $leading) = @_;
     my $dy = 0;
     # Notes at the bottom
     $ps->put('gsave Words');
     for my $n ( @{$notes_for{$mjd}} ) {
         $ps->put("$x $y moveto 2 $dy rmoveto $n show");
-        $dy += 7;
+        $dy += $leading;
     }
     $ps->put('grestore');
 }

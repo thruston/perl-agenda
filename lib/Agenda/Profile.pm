@@ -5,6 +5,7 @@ use warnings;
 
 use constant DEBUG => 0;
 use Carp;
+use utf8;
 
 our $VERSION = 0.3;
 
@@ -40,7 +41,7 @@ my %fields = (
     week_starts_on_day  => 1,        
     paper_size          => 'a4',     
     travel_words        => 'travel',    
-    currency_symbol     => '£',  
+    currency_symbol     => 'pound',  
     first_hour          => 8,
     last_hour           => 18,
     location_name       => 'London', 
