@@ -9,7 +9,8 @@
 
 use strict;
 use warnings;
-use feature "switch";
+no warnings 'experimental::smartmatch';
+use feature 'switch';
 
 use DateTime;
 use Agenda::Events;
