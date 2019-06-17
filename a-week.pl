@@ -22,14 +22,15 @@ use Agenda::Fortune qw(apothegm);
 use Getopt::Std;
 use POSIX;
 
-my $opts = { h => 0, m => 0, z => 0 , d => 0, a => 0, p => 'agenda.cfg' };
-getopts('acdhmzp:', $opts);
+my $opts = { h => 0, m => 0, z => 0 , d => 0, a => 0, r => 0, p => 'agenda.cfg' };
+getopts('acdhmzrp:', $opts);
 my $profile     = $opts->{p};
 my $want_astro  = $opts->{a};
 my $want_motto  = $opts->{m};
 my $want_duplex = $opts->{d};
 my $need_help   = $opts->{h};
 my $dump_events = $opts->{z};
+my $want_rules  = $opts->{r};
 
 # load the configuration file
 my $cfg = Agenda::Profile->new(file => $profile);
@@ -275,6 +276,26 @@ for my $p ( 1 .. $pages ) {
         put_schedule($w, $weeks_per_page);
     }
 
+    # rule some lines in the task area
+    if ($want_rules && $weeks_per_page == 1) {
+        my $x = $ps->{width}/2 + 24;
+        my $y = $ps->{ury} - 16;
+        $ps->put("gsave .4 setlinewidth .5 setgray");
+        for my $r (1..7) {
+            $y -= 81.25;
+            $ps->put(sprintf("%f %f moveto %f %f lineto stroke", $x, $y, $ps->{urx}, $y))
+        }
+        # and vertical rule on the weekend... (sigh..)
+        $y = $ps->{ury} - 670;
+        my $dx = ($ps->{urx}-$x)/4;
+        for my $r (1..3) {
+            $x += $dx;
+            $ps->put(sprintf("%f %f moveto %f %f lineto stroke", $x, $y, $x, $y-114));
+        }
+
+        $ps->put("grestore");
+    }
+
     # put the monthly calendar on too
     put_mini_calendar($weeks_per_page);
 
@@ -450,8 +471,12 @@ sub put_schedule {
                     my $h = $heads[$i];
                     # draw gutters
                     $ps->put('gsave 1 setgray 3 setlinewidth');
-                    $ps->put(sprintf '%g %g moveto 0 %g rlineto', $x+$w, $y-10, -$dp);
-                    $ps->put('stroke grestore');
+                    $ps->put(sprintf '%g %g moveto 0 %g rlineto stroke', $x+$w, $y-10, -$dp);
+                    if (defined $want_rules && $want_rules && $i > 0) {
+                        $ps->put('.5 setgray .4 setlinewidth');
+                        $ps->put(sprintf '%g %g moveto 0 %g rlineto stroke', $x+$w, $y-10, -.8*$dp);
+                    }
+                    $ps->put('grestore');
 
                     if ($h eq 'None') {
                         # nothing to do
@@ -478,7 +503,11 @@ sub put_schedule {
                     # update $w for next cell
                     $w += $c*$wd/$total_col_width;
 
-
+                }
+                # last rule
+                if (defined $want_rules && $want_rules) {
+                    $ps->put('gsave .5 setgray .4 setlinewidth');
+                    $ps->put(sprintf '%g %g moveto 0 %g rlineto stroke grestore', $x+$w, $y-10, -.8*$dp);
                 }
 
             }
