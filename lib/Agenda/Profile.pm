@@ -41,7 +41,6 @@ my %fields = (
     week_starts_on_day  => 1,        
     paper_size          => 'a4',     
     travel_words        => 'travel',    
-    currency_symbol     => 'pound',  
     first_hour          => 8,
     last_hour           => 18,
     location_name       => 'London', 
@@ -52,6 +51,8 @@ my %fields = (
     source_file         => undef,
     page_margin         => 15,
     col_gutter          => 0,
+    col_sizes           => '15 4 1',
+    col_heads           => 'None pound clock',
     weekend_days        => '6,7',
     weekend_style       => 'shade gainsboro colour navy rules none',
 );
@@ -106,22 +107,26 @@ sub load {
 
     warn "Trying to load $file\n" if DEBUG;
 
-    die "Can't access $file" unless -f $file;
-
-    open my $fh, '<', $file or die "Can't open $file\n";
-
-    while (<$fh>) {
-        chomp;
-        next if /^#/;
-        next if /^\*/;
-        next if /^$/;
-        s/=/ /g;
-        my ($key, $val) = split ' ', $_, 2;
-        $cfg->_set_value($key, $val);
+    if (! -f $file) {
+        warn "Can't access $file" if DEBUG;
     }
-    close $fh;
-    $cfg->{source_file} = $file;
-    return $cfg;
+    elsif (! open my $fh, '<', $file ) {
+        warn "Can't open $file" if DEBUG;
+    }
+    else {
+        while (<$fh>) {
+            chomp;
+            next if /^#/;
+            next if /^\*/;
+            next if /^$/;
+            s/=/ /g;
+            my ($key, $val) = split ' ', $_, 2;
+            $cfg->_set_value($key, $val);
+        }
+        close $fh;
+        $cfg->{source_file} = $file;
+    }
+    return;
 }
 
 

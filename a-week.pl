@@ -22,14 +22,15 @@ use Agenda::Fortune qw(apothegm);
 use Getopt::Std;
 use POSIX;
 
-my $opts = { h => 0, m => 0, z => 0 , d => 0, a => 0, p => 'agenda.cfg' };
-getopts('acdhmzp:', $opts);
+my $opts = { h => 0, m => 0, z => 0 , d => 0, a => 0, r => 0, p => 'agenda.cfg' };
+getopts('acdhmzrp:', $opts);
 my $profile     = $opts->{p};
 my $want_astro  = $opts->{a};
 my $want_motto  = $opts->{m};
 my $want_duplex = $opts->{d};
 my $need_help   = $opts->{h};
 my $dump_events = $opts->{z};
+my $want_rules  = $opts->{r};
 
 # load the configuration file
 my $cfg = Agenda::Profile->new(file => $profile);
@@ -275,6 +276,26 @@ for my $p ( 1 .. $pages ) {
         put_schedule($w, $weeks_per_page);
     }
 
+    # rule some lines in the task area
+    if ($want_rules && $weeks_per_page == 1) {
+        my $x = $ps->{width}/2 + 24;
+        my $y = $ps->{ury} - 16;
+        $ps->put("gsave .4 setlinewidth .5 setgray");
+        for my $r (1..7) {
+            $y -= 81.25;
+            $ps->put(sprintf("%f %f moveto %f %f lineto stroke", $x, $y, $ps->{urx}, $y))
+        }
+        # and vertical rule on the weekend... (sigh..)
+        $y = $ps->{ury} - 670;
+        my $dx = ($ps->{urx}-$x)/4;
+        for my $r (1..3) {
+            $x += $dx;
+            $ps->put(sprintf("%f %f moveto %f %f lineto stroke", $x, $y, $x, $y-114));
+        }
+
+        $ps->put("grestore");
+    }
+
     # put the monthly calendar on too
     put_mini_calendar($weeks_per_page);
 
@@ -388,7 +409,7 @@ sub put_schedule {
     # hour parameters (only apply to weekdays so no need to recalc when $dp changes for w/e)
     my $first_hour = $cfg->first_hour ||  8;
     my $last_hour  = $cfg->last_hour  || 18;
-    my $hour_lines = $last_hour-$first_hour+4; # to allow space for event text at bottom
+    my $hour_lines = $last_hour-$first_hour+5; # to allow space for event text at bottom
     my $hour_leading = $dp / $hour_lines;
 
     # Monday .. Friday
@@ -440,28 +461,55 @@ sub put_schedule {
 
 
             if ( $weeks_per_page == 1 ) {
-                # draw gutters
-                $ps->put('gsave 1 setgray 3 setlinewidth');
-                $ps->put(sprintf '%g %g moveto 0 %g rlineto', $x+$wd-72, $y-10, -$dp);
-                $ps->put(sprintf '%g %g moveto 0 %g rlineto', $x+$wd-16, $y-10, -$dp);
-                $ps->put('stroke grestore');
+                my @cols = split ' ', $cfg->col_sizes;
+                my @heads = split ' ', $cfg->col_heads;
+                my $total_col_width = 0;
+                $total_col_width += $_ for @cols;
+                my $w = 0;
+                for my $i (0 .. $#cols) {
+                    my $c = $cols[$i];
+                    my $h = $heads[$i];
+                    # draw gutters
+                    $ps->put('gsave 1 setgray 3 setlinewidth');
+                    $ps->put(sprintf '%g %g moveto 0 %g rlineto stroke', $x+$w, $y-10, -$dp);
+                    if (defined $want_rules && $want_rules && $i > 0) {
+                        $ps->put('.5 setgray .4 setlinewidth');
+                        $ps->put(sprintf '%g %g moveto 0 %g rlineto stroke', $x+$w, $y-10, -.8*$dp);
+                    }
+                    $ps->put('grestore');
 
-                # draw currency symbol
-                my $c = $cfg->currency_symbol;
-                if ( defined $c ) {
-                    if    ( $c eq 'euro'  ) { $c = 'gsave /Symbol 6 selectfont (\360) show grestore' }
-                    elsif ( $c eq 'pound' ) { $c = '/sterling glyphshow' }
-                    elsif ( $c eq 'dollar') { $c = 'Words ($) show' }
-                    else                    { $c = 'Words (' . $c . ') show' }
+                    if ($h eq 'None') {
+                        # nothing to do
+                    }
+                    elsif ( $h eq 'euro'  ) { 
+                        $ps->put(sprintf "%g %g moveto gsave /Symbol 6 selectfont (\360) show grestore", $x+$w+4, $y-10);
+                    }
+                    elsif ( $h eq 'pound' ) {
+                        $ps->put(sprintf "%g %g moveto gsave /sterling glyphshow grestore", $x+$w+4, $y-10);
+                    }
+                    elsif ( $h eq 'dollar') { 
+                        $ps->put(sprintf "%g %g moveto Words ($) show", $x+$w+4, $y-10);
+                    }
+                    elsif ( $h eq 'clock' ) {
+                        # draw clock face
+                        $ps->put(sprintf '%g %g moveto',        $x+$w+6, $y-8);
+                        $ps->put('gsave .2 setlinewidth');
+                        $ps->put(sprintf '%g %g 2.4 20 380 arc',$x+$w+6, $y-8);
+                        $ps->put("-2.2 -0.9 rmoveto -1.4 2.8 rlineto stroke grestore");
+                    }
+                    else {                
+                        $ps->put(sprintf "%g %g moveto Words (" . _ps_proof($h) . ") show", $x+$w+4, $y-10);
+                    }
+                    # update $w for next cell
+                    $w += $c*$wd/$total_col_width;
 
-                    $ps->put(sprintf "%g %g moveto $c", $x+$wd-68, $y-10);
+                }
+                # last rule
+                if (defined $want_rules && $want_rules) {
+                    $ps->put('gsave .5 setgray .4 setlinewidth');
+                    $ps->put(sprintf '%g %g moveto 0 %g rlineto stroke grestore', $x+$w, $y-10, -.8*$dp);
                 }
 
-                # draw clock face
-                $ps->put(sprintf '%g %g moveto',        $x+$wd-8, $y-8);
-                $ps->put('gsave .2 setlinewidth');
-                $ps->put(sprintf '%g %g 2.4 20 380 arc',$x+$wd-8, $y-8);
-                $ps->put("-2.2 -0.9 rmoveto -1.4 2.8 rlineto stroke grestore");
             }
 
         }
@@ -587,5 +635,9 @@ sub put_task_list {
 
     }
     $ps->put("grestore");
+}
 
+sub _ps_proof {
+    my $s = shift;
+    return $s
 }
