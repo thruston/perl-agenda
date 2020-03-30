@@ -157,7 +157,12 @@ for ( my $day = $first_day->clone;  $day <= $last_day; $day->add(days => 1)) {
             $text = $e->{text};
         }
         if ( $want_rules_on{$d} == 0 ) {
-            push @{$notes_for{$d}}, "$colour ($text)";
+            if ($text =~ m{\A\d\d:\d\d}iosx) {
+                push @{$notes_for{$d}}, "royal_blue ($text)";
+            }
+            else {
+                push @{$notes_for{$d}}, "$colour ($text)";
+            }
             next EVENT;
         }
         if ( $text =~ m{ \A (\d\d):(\d\d)\D(\d\d):(\d\d)\s+(\S.*) \Z }xismo ) {
@@ -460,7 +465,8 @@ sub put_schedule {
             }
 
         }
-        put_notes($day->mjd, $x, $y-$dp+3, 7);
+        # line up with the rules
+        put_notes($day->mjd, $x+20, $y-$dp+3, 7);
 
     }
 
@@ -502,7 +508,7 @@ sub put_schedule {
             put_moon( $x+$wd-30, $y-6, $observations_on{$day->mjd});
         }
 
-        put_notes($day->mjd, $x-2, $y-32, -7);
+        put_notes($day->mjd, $x-2, $y-$dp+3, 7);
 
     }
 }
