@@ -312,10 +312,9 @@ sub _week {
 sub _UK_tax_week {
     my $dt = shift;
     my $april6 = DateTime->new( year => $dt->year, month => 4, day => 6);
-    my $today  = DateTime->today;
-    if ($april6 > $today ) { $april6->subtract(years => 1 ) }
+    if ($april6 > $dt ) { $april6->subtract(years => 1 ) }
     use integer;
-    return sprintf "%d", ($today->mjd - $april6->mjd )/7+1;
+    return sprintf "%d", ($dt->mjd - $april6->mjd )/7+1;
 }
 
 sub _UK_tax_month {
