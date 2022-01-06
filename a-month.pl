@@ -314,13 +314,13 @@ for my $p (1..$pages) {
         if ( $want_motto && $m > 1 && $last_of_month->day < 31 ) {
             my @motto_lines = apothegm();
             my $leading = 7;
-            $x+=2;
+            $x+=4;
             for (@motto_lines) {
                 $y -= $leading;
                 # escape backslash and parens, trim trailing & leading space
                 s/([\(\)\\])/\\$1/g;
                 s/^\s*//; s/\s*$//;
-                $ps->put("$x $y moveto Notes 0 ($_) rshow");
+                $ps->put("$x $y moveto Notes 0 ($_) show");
             }
         }
         
