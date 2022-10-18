@@ -53,7 +53,7 @@ my %fields = (
     col_gutter          => 0,
     col_sizes           => '15 4 1',
     col_heads           => 'None pound clock',
-    weekend_days        => '6,7',
+    weekend_days        => [6, 7],
     weekend_style       => 'shade gainsboro colour navy rules none',
 );
 
