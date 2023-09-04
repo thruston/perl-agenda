@@ -8,5 +8,9 @@ WriteMakefile(
     AUTHOR        => 'Toby Thurston',              
     EXE_FILES     => [ qw(a-week.pl a-month.pl) ], 
     dist          => {TARFLAGS => '-cvf'},         
+    PREREQ_PM => {
+        'DateTime::Set' => 0.3900,
+        'DateTime::Format::Epoch' => 0.16,
+    }
 );
 
