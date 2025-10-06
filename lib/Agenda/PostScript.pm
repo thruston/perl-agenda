@@ -31,7 +31,7 @@ No functions are exported by default.
 
 =head1 AUTHOR
 
-Toby Thurston -- 16 Nov 2011 
+Toby Thurston -- 06 Oct 2025
 
 toby@cpan.org
 
@@ -40,6 +40,7 @@ toby@cpan.org
 our %paper_size = (
         a3      => [ 843, 1192 ] ,
         a4      => [ 596, 843  ] ,
+        a4s     => [ 580, 826  ] , 
         a5      => [ 421, 596  ] ,
         letter  => [ 612, 792 ]);
 
