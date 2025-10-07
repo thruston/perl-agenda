@@ -282,7 +282,7 @@ for my $p ( 1 .. $pages ) {
         my $y = $ps->{ury} - 16;
         $ps->put("gsave .4 setlinewidth .5 setgray");
         for my $r (1..7) {
-            $y -= 81.25;
+            $y -= $ps->{height} / 10.2;
             $ps->put(sprintf("%f %f moveto %f %f lineto stroke", $x, $y, $ps->{urx}, $y))
         }
         # and vertical rule on the weekend... (sigh..)
